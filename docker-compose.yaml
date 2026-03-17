@@ -10,5 +10,20 @@
     volumes:
       - sqlserver_data:/var/opt/mssql
 
+  etl:
+    build:
+      context: .
+      dockerfile: TaxiTripsETL/Dockerfile
+    container_name: taxi-etl
+    depends_on:
+      - sqlserver
+    environment:
+      TAXI_SQL_CONNECTION: Server=sqlserver,1433;Database=TaxiTripsDb;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;Encrypt=False
+    volumes:
+      - ./data:/app/data
+      - ./output:/app/output
+    command: ["/app/data/sample-cab-data.csv", "/app/output/duplicates.csv"]
+    restart: "no"
+
 volumes:
   sqlserver_data:

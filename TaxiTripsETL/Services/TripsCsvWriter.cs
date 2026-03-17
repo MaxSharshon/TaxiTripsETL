@@ -13,8 +13,11 @@ public class TripsCsvWriter : IDisposable
     {
         _streamWriter = new StreamWriter(filePath);
         _csvWriter = new CsvWriter(_streamWriter, CultureInfo.InvariantCulture);
+
+        _csvWriter.WriteHeader<TaxiTrip>();
+        _csvWriter.NextRecord();
     }
-    
+
     public void Write(TaxiTrip record)
     {
         _csvWriter.WriteRecord(record);

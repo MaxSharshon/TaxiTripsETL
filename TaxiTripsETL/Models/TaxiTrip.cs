@@ -10,7 +10,7 @@ public class TaxiTrip
 
     public double? TripDistance { get; set; }
 
-    public string StoreAndForwardFlag { get; set; }
+    public string? StoreAndForwardFlag { get; set; }
 
     public int? PickupLocationId { get; set; }
 

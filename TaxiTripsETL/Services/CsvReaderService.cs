@@ -7,18 +7,34 @@ namespace TaxiTripsETL.Services;
 
 public class CsvReaderService
 {
-    public IEnumerable<TaxiTrip> ReadTrips(string filePath)
+    public IEnumerable<TaxiTrip> ReadTrips(string filePath, Action? onInvalidRow = null)
     {
         using var streamReader = new StreamReader(filePath);
-        using var csvReader = new CsvReader(streamReader, GetConfig());
+        using var csv = new CsvReader(streamReader, GetConfig());
 
-        csvReader.Context.RegisterClassMap<TaxiTripMap>();
-        
-        foreach (var record in csvReader.GetRecords<TaxiTrip>())
-            yield return record;
+        csv.Context.RegisterClassMap<TaxiTripMap>();
+
+        while (csv.Read())
+        {
+            TaxiTrip? record = null;
+
+            try
+            {
+                record = csv.GetRecord<TaxiTrip>();
+            }
+            catch
+            {
+                onInvalidRow?.Invoke();
+            }
+
+            if (record != null)
+            {
+                yield return record;
+            }
+        }
     }
 
-    private CsvConfiguration GetConfig() =>
+    private static CsvConfiguration GetConfig() =>
         new(CultureInfo.InvariantCulture)
         {
             HasHeaderRecord = true,

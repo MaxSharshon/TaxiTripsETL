@@ -1,23 +1,35 @@
 ﻿USE TaxiTripsDb;
 GO
 
-CREATE TABLE TaxiTrips
+SET QUOTED_IDENTIFIER ON;
+GO
+
+SET ANSI_NULLS ON;
+GO
+
+IF OBJECT_ID('dbo.TaxiTrips', 'U') IS NOT NULL
+BEGIN
+    DROP TABLE dbo.TaxiTrips;
+END
+GO
+
+CREATE TABLE dbo.TaxiTrips
 (
-    Id INT IDENTITY PRIMARY KEY,
-
-    PickupDatetime DATETIME2 NOT NULL,
-    DropoffDatetime DATETIME2 NOT NULL,
-
-    PassengerCount INT,
-
-    TripDistance FLOAT,
-
-    StoreAndFwdFlag NVARCHAR(3),
-
-    PULocationID INT,
-    DOLocationID INT,
-
-    FareAmount DECIMAL(10,2),
-    
-    TipAmount DECIMAL(10,2)
+    Id BIGINT IDENTITY(1, 1) NOT NULL PRIMARY KEY,
+    PickupDatetime DATETIME2(0) NOT NULL,
+    DropoffDatetime DATETIME2(0) NOT NULL,
+    PassengerCount INT NULL,
+    TripDistance DECIMAL(9, 3) NULL,
+    StoreAndFwdFlag VARCHAR(3) NULL,
+    PULocationID INT NULL,
+    DOLocationID INT NULL,
+    FareAmount DECIMAL(10, 2) NULL,
+    TipAmount DECIMAL(10, 2) NULL,
+    TripDurationSeconds AS DATEDIFF(SECOND, PickupDatetime, DropoffDatetime) PERSISTED
 );
+GO
+
+ALTER TABLE dbo.TaxiTrips
+ADD CONSTRAINT CK_TaxiTrips_StoreAndFwdFlag
+CHECK (StoreAndFwdFlag IN ('Yes', 'No') OR StoreAndFwdFlag IS NULL);
+GO

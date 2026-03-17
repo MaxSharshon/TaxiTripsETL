@@ -1,2 +1,5 @@
-﻿CREATE DATABASE TaxiTripsDb;
+﻿IF DB_ID('TaxiTripsDb') IS NULL
+BEGIN
+    CREATE DATABASE TaxiTripsDb;
+END
 GO
